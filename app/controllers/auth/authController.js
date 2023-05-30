@@ -1,4 +1,6 @@
 const { user, Sequelize } = require('../../../models')
+const { hash } = require('../../utils/hash')
+const { authLogger } = require('../../../config/logging')
 
 const Op = Sequelize.Op
 
@@ -14,13 +16,16 @@ self.createUser = async (req, res) => {
             })
         }
 
+        const hashPassword = await hash(body?.password)
         const newUser = {
             userName: body?.userName,
             email: body?.email,
-            password: body?.password,
+            password: hashPassword,
         }
 
         const data = await user.create(newUser)
+
+        authLogger.info(`Success create new user : with email : ${body.email}`)
 
         return res.status(200).send({
             message: 'Success create new user',

@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+    backend_express:
+        build:
+            dockerfile: Dockerfile
+            context: .
+        command: nodemon --legacy-watch index.js
+        volumes:
+            - .:/app
+        ports:
+            - '3000:3000'
+        networks:
+            - app-network
+        depends_on:
+            - db
+
+    db:
+        image: postgres:latest
+        environment:
+            POSTGRES_PASSWORD: example
+        ports:
+            - '5432:5432'
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
